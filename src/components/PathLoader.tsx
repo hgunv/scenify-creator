@@ -37,6 +37,7 @@ function PathLoader({ canvas }: Props) {
       const path = new fabric.Path(value)
       canvas.clear()
       path.scaleToWidth(240)
+      path.set('fill', '#CBCBCB')
       canvas.add(path)
       path.setControlsVisibility({ mtr: false, mb: false, mt: false, mr: false, ml: false })
       path.center()

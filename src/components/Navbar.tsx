@@ -36,9 +36,19 @@ function Navbar({ canvas }: Props) {
       type: 'StaticPath',
       metadata: {
         value: pathJSON.path,
+        fill: path.fill,
       },
     }
-    await createShape(object)
+    const template = {
+      frame: {
+        width: object.width * object.scaleX,
+        height: object.height * object.scaleY,
+      },
+      objects: [object],
+      background: { type: 'color', value: '#ffffff' },
+    }
+    console.log({ template })
+    await createShape(template)
     enqueue({
       message: 'Saved object',
       startEnhancer: ({ size }) => <Check size={size} />,

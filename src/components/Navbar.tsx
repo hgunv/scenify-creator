@@ -1,9 +1,11 @@
 import { styled, ThemeProvider, DarkTheme } from 'baseui'
 import { Button, KIND } from 'baseui/button'
 import Logo from '@components/icons/Logo'
-import { createShape } from '@/api'
+import { createShape, getSignedURLForUpload } from '@/api'
 import { useSnackbar } from 'baseui/snackbar'
 import { Check } from 'baseui/icon'
+import {randomFilename} from '@/utils/unique'
+import axios from 'axios'
 
 const Container = styled('div', props => ({
   height: '70px',
@@ -30,6 +32,12 @@ function Navbar({ canvas }: Props) {
   const save = async () => {
     const path = canvas.getObjects()[0]
     const pathJSON = path.toJSON()
+    
+    const params: Record<string, string> = {}
+    const pathURI = path.toDataURL(params);
+    const blob = await (await fetch(pathURI)).blob(); 
+    const updatedFileName = 'element/'+randomFilename('png');
+
     const baseOptions = getBaseOptions(pathJSON)
     const object = {
       ...baseOptions,
@@ -46,8 +54,16 @@ function Navbar({ canvas }: Props) {
       },
       objects: [object],
       background: { type: 'color', value: '#ffffff' },
+      filename: updatedFileName,
     }
-    console.log({ template })
+    //console.log({ template })
+
+    const type = 'image/png';
+    const response = await getSignedURLForUpload({ name: updatedFileName, type })
+    await axios.put(response.url, blob, {
+      headers: { 'Content-Type': type },
+    })
+
     await createShape(template)
     enqueue({
       message: 'Saved object',

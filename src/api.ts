@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const apiConnection = axios.create({ 
+const apiConnection = axios.create({
   baseURL: 'https://devadmin.cliquify.me/api/branding'
   //baseURL: 'http://localhost:8080'
  })
@@ -24,5 +24,21 @@ export function createShape(value: any) {
         resolve(res.data)
       })
       .catch(err => reject(err))
+  })
+}
+
+interface Category {
+  id: string
+  title: string
+}
+
+export function getCategories(): Promise<Category[]> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { data } = await apiConnection.get('/elements-categories')
+      resolve(data.data)
+    } catch (err) {
+      reject(err)
+    }
   })
 }
